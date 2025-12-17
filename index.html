@@ -1,54 +1,252 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Smart Expense Tracker</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProfitPath - Smart Expense Tracker</title>
+    
+    <!-- 1. Load Tailwind CSS (Styling Framework) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' }
+    </script>
+    
+    <!-- 2. Load React (The Required Framework) -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- 3. Load Babel (To compile React in browser) -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+        /* Custom Animations */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-in { animation: fadeIn 0.5s ease-out forwards; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 20px; }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #475569; }
+    </style>
 </head>
-<body>
+<body class="bg-slate-50 text-slate-800 font-sans transition-colors duration-300">
 
-<header>
-  <h1>💰 Smart Expense Tracker</h1>
-  <p>Track daily expenses & visualize spending</p>
-</header>
+    <div id="root"></div>
 
-<div class="container">
+    <script type="text/babel">
+        // --- ICONS ---
+        const IconWallet = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg>;
+        const IconTrending = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>;
+        const IconCheck = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>;
+        const IconArrowRight = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>;
+        const IconMoon = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>;
+        const IconSun = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>;
+        const IconDownload = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>;
+        const IconTrash = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>;
 
-  <!-- Expense Input -->
-  <div class="card">
-    <h2>Add Expense</h2>
-    <input type="date" id="date">
-    <input type="number" id="amount" placeholder="Amount (RM)">
-    <select id="category">
-      <option>Food</option>
-      <option>Transport</option>
-      <option>Education</option>
-      <option>Entertainment</option>
-      <option>Other</option>
-    </select>
-    <button onclick="addExpense()">Add</button>
-  </div>
+        // --- OOP CLASS: Financial Ledger ---
+        class FinancialLedger {
+            constructor(income = 0, expenses = []) {
+                this.initialIncome = parseFloat(income) || 0;
+                this.expenses = expenses;
+            }
 
-  <!-- Summary -->
-  <div class="card">
-    <h2>Monthly Summary</h2>
-    <p><b>Total Spending:</b> RM <span id="total">0</span></p>
-    <ul id="summary"></ul>
-  </div>
+            addExpense(category, amount) {
+                this.expenses.push({
+                    id: Date.now(),
+                    category,
+                    amount: parseFloat(amount) || 0,
+                    date: new Date().toLocaleDateString()
+                });
+            }
 
-  <!-- Chart -->
-  <div class="card">
-    <h2>Spending Distribution</h2>
-    <canvas id="expenseChart"></canvas>
-  </div>
+            removeExpense(id) {
+                this.expenses = this.expenses.filter(e => e.id !== id);
+            }
 
-</div>
+            getTotalExpenses() {
+                return this.expenses.reduce((total, item) => total + item.amount, 0);
+            }
 
-<footer>
-  <p>SDG 8 & SDG 12 – Digital Financial Awareness</p>
-</footer>
+            getNetProfit() {
+                return this.initialIncome - this.getTotalExpenses();
+            }
 
-<script src="script.js"></script>
-</body>
-</html>
+            exportToCSV() {
+                let csvContent = "data:text/csv;charset=utf-8,Date,Category,Amount (RM)\n";
+                this.expenses.forEach(e => { csvContent += `${e.date},${e.category},${e.amount.toFixed(2)}\n`; });
+                csvContent += `\nTOTAL SPENT,,${this.getTotalExpenses().toFixed(2)}\nNET PROFIT,,${this.getNetProfit().toFixed(2)}`;
+                return encodeURI(csvContent);
+            }
+
+            getCategoryBreakdown() {
+                const totals = {};
+                const totalExp = this.getTotalExpenses();
+                this.expenses.forEach(exp => { totals[exp.category] = (totals[exp.category] || 0) + exp.amount; });
+                return Object.keys(totals).map(cat => ({
+                    category: cat,
+                    amount: totals[cat],
+                    percentage: totalExp === 0 ? 0 : ((totals[cat] / totalExp) * 100).toFixed(1)
+                })).sort((a, b) => b.amount - a.amount);
+            }
+
+            formatCurrency(amount) {
+                return new Intl.NumberFormat('en-MY', { style: 'currency', currency: 'MYR' }).format(amount);
+            }
+        }
+
+        // --- COMPONENTS ---
+        
+        // 1. Navbar Component
+        const Navbar = ({ darkMode, setDarkMode }) => (
+            <nav className="bg-white dark:bg-slate-900 shadow-sm border-b border-slate-200 dark:border-slate-800 px-6 py-4 flex justify-between items-center sticky top-0 z-10 transition-colors duration-300">
+                <div className="flex items-center gap-2">
+                    <div className="text-emerald-600 dark:text-emerald-400"><IconTrending /></div>
+                    <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-teal-500">ProfitPath</span>
+                </div>
+                <div className="flex items-center gap-4">
+                    <button onClick={() => setDarkMode(!darkMode)} className="p-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:scale-110 transition">
+                        {darkMode ? <IconSun /> : <IconMoon />}
+                    </button>
+                    <span className="hidden md:inline text-xs font-semibold text-emerald-600 dark:text-emerald-400">SDG 8 & 12</span>
+                </div>
+            </nav>
+        );
+
+        // 2. Login Page Component
+        const LoginPage = ({ onLogin }) => {
+            const [name, setName] = React.useState('');
+            return (
+                <div className="mt-10 flex flex-col items-center text-center animate-fade-in">
+                    <div className="w-20 h-20 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center mb-6 shadow-sm text-emerald-600 dark:text-emerald-400">
+                        <div style={{ transform: 'scale(1.5)' }}><IconWallet /></div>
+                    </div>
+                    <h1 className="text-4xl font-extrabold text-slate-900 dark:text-white mb-4">Smart <span className="text-emerald-600 dark:text-emerald-400">Expense Tracker</span></h1>
+                    <p className="text-lg text-slate-600 dark:text-slate-300 max-w-lg mb-8">Manage finances, track growth, and ensure responsible consumption (SDG 12).</p>
+                    <div className="w-full max-w-sm bg-white dark:bg-slate-800 p-8 rounded-xl shadow-lg border border-slate-100 dark:border-slate-700 transition-colors">
+                        <form onSubmit={(e) => { e.preventDefault(); if(name) onLogin(name); }}>
+                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1 text-left">Your Name</label>
+                            <input type="text" required className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none mb-4 bg-white dark:bg-slate-900 text-slate-900 dark:text-white transition-colors" placeholder="e.g., Ali Ahmad" value={name} onChange={e => setName(e.target.value)} />
+                            <button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg transition flex justify-center items-center gap-2">Start Session <IconArrowRight /></button>
+                        </form>
+                    </div>
+                </div>
+            );
+        };
+
+        // 3. Calculation/Tracker Page Component
+        const TrackerPage = ({ username, savedIncome, savedExpenses, onSubmit, onSave }) => {
+            const [income, setIncome] = React.useState(savedIncome || '');
+            const [expenses, setExpenses] = React.useState(savedExpenses || []);
+            const [cat, setCat] = React.useState('Food');
+            const [amt, setAmt] = React.useState('');
+
+            React.useEffect(() => { onSave(income, expenses); }, [income, expenses]);
+            const ledger = new FinancialLedger(income, expenses);
+
+            const addExp = () => {
+                if(amt && parseFloat(amt) > 0) {
+                    ledger.addExpense(cat, amt);
+                    setExpenses([...ledger.expenses]);
+                    setAmt('');
+                }
+            };
+
+            const removeExp = (id) => {
+                ledger.removeExpense(id);
+                setExpenses([...ledger.expenses]);
+            };
+
+            return (
+                <div className="mt-6 animate-fade-in">
+                    <div className="flex justify-between items-center mb-6">
+                        <div><h2 className="text-2xl font-bold text-slate-800 dark:text-white">My Ledger</h2><p className="text-slate-500 dark:text-slate-400 text-sm">User: {username}</p></div>
+                        <div className="bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 px-3 py-1 rounded-full text-xs font-bold uppercase border border-emerald-100 dark:border-emerald-800">Auto-Saving On</div>
+                    </div>
+                    <div className="grid md:grid-cols-3 gap-6">
+                        <div className="md:col-span-2 space-y-6">
+                            <div className="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 transition-colors">
+                                <h3 className="font-semibold text-slate-700 dark:text-slate-200 mb-3">Monthly Income (RM)</h3>
+                                <input type="number" className="w-full px-4 py-2 border border-blue-200 dark:border-blue-900 bg-blue-50 dark:bg-blue-900/20 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none font-bold text-blue-900 dark:text-blue-100 transition-colors" placeholder="0.00" value={income} onChange={e => setIncome(e.target.value)} />
+                            </div>
+                            <div className="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 transition-colors">
+                                <h3 className="font-semibold text-slate-700 dark:text-slate-200 mb-3">Add Expense</h3>
+                                <div className="flex gap-2 mb-3">
+                                    <select className="flex-1 px-3 py-2 border dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-white outline-none" value={cat} onChange={e => setCat(e.target.value)}>
+                                        <option>Food</option><option>Transport</option><option>Education</option><option>Entertainment</option><option>Other</option>
+                                    </select>
+                                    <input type="number" className="flex-1 px-3 py-2 border dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-white outline-none" placeholder="Amount" value={amt} onChange={e => setAmt(e.target.value)} />
+                                </div>
+                                <button onClick={addExp} className="w-full py-2 bg-slate-800 dark:bg-slate-700 text-white text-sm font-medium rounded-lg hover:bg-slate-900 dark:hover:bg-slate-600 transition">+ Add Expense</button>
+                            </div>
+                            <div className="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 transition-colors">
+                                <h3 className="text-sm font-bold text-slate-400 uppercase mb-3">Transactions ({expenses.length})</h3>
+                                <div className="max-h-[200px] overflow-y-auto custom-scrollbar space-y-2">
+                                    {expenses.slice().reverse().map((e, i) => (
+                                        <div key={i} className="flex justify-between items-center text-sm p-2 bg-slate-50 dark:bg-slate-700/50 rounded border border-slate-100 dark:border-slate-700 group">
+                                            <span className="font-medium text-slate-700 dark:text-slate-200">{e.category}</span>
+                                            <div className="flex items-center gap-3"><span className="font-mono text-red-600 dark:text-red-400 font-bold">- RM {e.amount.toFixed(2)}</span><button onClick={() => removeExp(e.id)} className="text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition"><IconTrash /></button></div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                        <div className="space-y-4">
+                            <div className="bg-slate-900 dark:bg-slate-800 text-white p-6 rounded-xl shadow-lg sticky top-24 transition-colors">
+                                <h3 className="text-emerald-400 text-xs font-bold uppercase mb-4">Live Overview</h3>
+                                <div className="mb-4"><p className="text-slate-400 text-xs">INCOME</p><p className="text-xl font-bold">{ledger.formatCurrency(ledger.initialIncome)}</p></div>
+                                <div className="mb-4"><p className="text-slate-400 text-xs">SPENT</p><p className="text-xl font-bold text-red-300">- {ledger.formatCurrency(ledger.getTotalExpenses())}</p></div>
+                                <div className="border-t border-slate-700 pt-4"><p className="text-slate-400 text-xs">BALANCE</p><p className="text-3xl font-bold text-emerald-400">{ledger.formatCurrency(ledger.getNetProfit())}</p></div>
+                            </div>
+                            <button onClick={() => onSubmit({ ...ledger, breakdown: ledger.getCategoryBreakdown(), netProfit: ledger.getNetProfit(), csv: ledger.exportToCSV() })} disabled={expenses.length===0} className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-xl shadow-md transition disabled:opacity-50 disabled:cursor-not-allowed">View Report & Download</button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // 4. Notification/Report Page Component
+        const ReportPage = ({ data, username, onReset }) => {
+            const [loading, setLoading] = React.useState(true);
+            React.useEffect(() => { setTimeout(() => setLoading(false), 1200) }, []);
+
+            if(loading) return <div className="min-h-[50vh] flex flex-col items-center justify-center animate-fade-in text-slate-600 dark:text-slate-400"><div className="w-12 h-12 border-4 border-emerald-200 border-t-emerald-600 rounded-full animate-spin mb-4"></div><p className="font-medium">Calculating SDG Impact...</p></div>;
+
+            return (
+                <div className="mt-8 max-w-2xl mx-auto animate-fade-in">
+                    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 overflow-hidden transition-colors">
+                        <div className="bg-emerald-600 p-8 text-center text-white">
+                            <div className="inline-flex bg-white/20 p-3 rounded-full mb-4"><div className="text-white"><IconCheck /></div></div>
+                            <h2 className="text-3xl font-bold">Report Ready</h2>
+                            <p className="text-emerald-100 mt-2">Analysis for {username}</p>
+                        </div>
+                        <div className="p-8 space-y-6">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="p-4 bg-slate-50 dark:bg-slate-700/50 rounded-xl"><p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Total Spent</p><p className="text-2xl font-bold text-slate-800 dark:text-white">RM {data.getTotalExpenses().toFixed(2)}</p></div>
+                                <div className={`p-4 rounded-xl ${data.netProfit>=0?'bg-emerald-50 dark:bg-emerald-900/20':'bg-red-50 dark:bg-red-900/20'}`}><p className={`text-xs font-bold uppercase ${data.netProfit>=0?'text-emerald-600 dark:text-emerald-400':'text-red-600 dark:text-red-400'}`}>Net Balance</p><p className={`text-2xl font-bold ${data.netProfit>=0?'text-emerald-700 dark:text-emerald-400':'text-red-700 dark:text-red-400'}`}>RM {data.netProfit.toFixed(2)}</p></div>
+                            </div>
+                            <div>
+                                <h3 className="text-sm font-bold text-slate-700 dark:text-slate-300 uppercase mb-4">Category Breakdown</h3>
+                                {data.breakdown.map((item, i) => (
+                                    <div key={i} className="mb-3">
+                                        <div className="flex justify-between text-sm mb-1 text-slate-700 dark:text-slate-300"><span className="font-medium">{item.category}</span><span className="font-bold">{item.percentage}%</span></div>
+                                        <div className="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-2 overflow-hidden"><div className="h-full bg-blue-500" style={{width: `${item.percentage}%`}}></div></div>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="flex gap-3">
+                                <button onClick={onReset} className="flex-1 py-3 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700">Back</button>
+                                <a href={data.csv} download="my_expenses.csv" className="flex-1 py-3 bg-slate-900 dark:bg-slate-700 text-white rounded-lg hover:bg-slate-800 dark:hover:bg-slate-600 flex items-center justify-center gap-2 font-bold shadow-lg"><IconDownload /> Download CSV</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- MAIN APP ---
+        const App = () => {
+            const [page, setPage] = React.useState('login');
+            const [user, setUser] = React.useState(() => localStorage.getItem('pp_user') || '');
+            const [income, setIncome] = React.useState(() => localStorage.getItem('pp_income') || '');
+            const [expenses, setExpenses] = React.useState(() => JSON.parse(localStorage.getItem('pp_expenses')) || []);
+            const [data, setData
