@@ -2,51 +2,90 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Smart Expense Tracker</title>
+  <title>GigEconomy Freelance Tracker</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
-<header>
-  <h1>💰 Smart Expense Tracker</h1>
-  <p>Track daily expenses & visualize spending</p>
-</header>
+<section id="login-page" class="active-page">
+    <div class="login-card">
+        <h1>🚀 GigTracker</h1>
+        <p>Freelancer Financial Sustainability (SDG 8)</p>
+        <input type="text" id="username" placeholder="Username (e.g. user)">
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="AuthController.login()">Login</button>
+        <p class="hint">Hint: any user / any password</p>
+    </div>
+</section>
 
-<div class="container">
+<div id="app-layout" style="display:none;">
+    
+    <nav>
+        <h2>GigTracker</h2>
+        <ul>
+            <li onclick="Navigation.goTo('dashboard-page')">Dashboard</li>
+            <li onclick="Navigation.goTo('notification-page')">Export & Notify</li>
+            <li onclick="AuthController.logout()">Logout</li>
+        </ul>
+    </nav>
 
-  <!-- Expense Input -->
-  <div class="card">
-    <h2>Add Expense</h2>
-    <input type="date" id="date">
-    <input type="number" id="amount" placeholder="Amount (RM)">
-    <select id="category">
-      <option>Food</option>
-      <option>Transport</option>
-      <option>Education</option>
-      <option>Entertainment</option>
-      <option>Other</option>
-    </select>
-    <button onclick="addExpense()">Add</button>
-  </div>
+    <section id="dashboard-page" class="page">
+        <div class="container">
+            <div class="card">
+                <h3>Add Gig Income/Expense</h3>
+                <input type="date" id="date">
+                <input type="number" id="amount" placeholder="Amount (RM)">
+                <select id="type">
+                    <option value="income">Income (Gig Work)</option>
+                    <option value="expense">Expense (Overhead)</option>
+                </select>
+                <select id="category">
+                    <option>Project Fee</option>
+                    <option>Equipment</option>
+                    <option>Transport</option>
+                    <option>Food</option>
+                </select>
+                <button onclick="ExpenseController.addItem()">Add Transaction</button>
+            </div>
 
-  <!-- Summary -->
-  <div class="card">
-    <h2>Monthly Summary</h2>
-    <p><b>Total Spending:</b> RM <span id="total">0</span></p>
-    <ul id="summary"></ul>
-  </div>
+            <div class="card">
+                <h3>Financial Summary</h3>
+                <p>Net Profit: RM <span id="net-profit">0.00</span></p>
+                <ul id="transaction-list"></ul>
+            </div>
 
-  <!-- Chart -->
-  <div class="card">
-    <h2>Spending Distribution</h2>
-    <canvas id="expenseChart"></canvas>
-  </div>
+            <div class="card">
+                <h3>Visual Analytics</h3>
+                <canvas id="financeChart"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <section id="notification-page" class="page" style="display:none;">
+        <div class="container">
+            <div class="card">
+                <h3>Export & Notify</h3>
+                <p>Send your monthly financial report to stakeholders or save for tax purposes.</p>
+                
+                <textarea id="report-msg" rows="4">My Net Profit for this month is RM 0.00.</textarea>
+                
+                <div class="button-group">
+                    <button class="btn-whatsapp" onclick="NotificationService.sendWhatsApp()">
+                        Send via WhatsApp
+                    </button>
+                    <button class="btn-email" onclick="NotificationService.sendEmail()">
+                        Send via Email
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
 
 </div>
 
 <footer>
-  <p>SDG 8 & SDG 12 – Digital Financial Awareness</p>
+  <p>SDG 8: Decent Work & Economic Growth | SDG 9: Innovation</p>
 </footer>
 
 <script src="script.js"></script>
