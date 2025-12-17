@@ -1,93 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>GigEconomy Freelance Tracker</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body>
-
-<section id="login-page" class="active-page">
-    <div class="login-card">
-        <h1>🚀 GigTracker</h1>
-        <p>Freelancer Financial Sustainability (SDG 8)</p>
-        <input type="text" id="username" placeholder="Username (e.g. user)">
-        <input type="password" id="password" placeholder="Password">
-        <button onclick="AuthController.login()">Login</button>
-        <p class="hint">Hint: any user / any password</p>
-    </div>
-</section>
-
-<div id="app-layout" style="display:none;">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GigConnect - Freelance Marketplace</title>
     
-    <nav>
-        <h2>GigTracker</h2>
-        <ul>
-            <li onclick="Navigation.goTo('dashboard-page')">Dashboard</li>
-            <li onclick="Navigation.goTo('notification-page')">Export & Notify</li>
-            <li onclick="AuthController.logout()">Logout</li>
-        </ul>
-    </nav>
+    <!-- 1. FRAMEWORK: Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: { extend: { colors: { brand: '#4F46E5', accent: '#10B981' } } }
+        }
+    </script>
+    
+    <!-- 2. FRAMEWORK: Load React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- 3. COMPILER: Load Babel (to run JSX in the browser) -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-    <section id="dashboard-page" class="page">
-        <div class="container">
-            <div class="card">
-                <h3>Add Gig Income/Expense</h3>
-                <input type="date" id="date">
-                <input type="number" id="amount" placeholder="Amount (RM)">
-                <select id="type">
-                    <option value="income">Income (Gig Work)</option>
-                    <option value="expense">Expense (Overhead)</option>
-                </select>
-                <select id="category">
-                    <option>Project Fee</option>
-                    <option>Equipment</option>
-                    <option>Transport</option>
-                    <option>Food</option>
-                </select>
-                <button onclick="ExpenseController.addItem()">Add Transaction</button>
-            </div>
+    <!-- Link to External CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans">
 
-            <div class="card">
-                <h3>Financial Summary</h3>
-                <p>Net Profit: RM <span id="net-profit">0.00</span></p>
-                <ul id="transaction-list"></ul>
-            </div>
+    <!-- React App Mount Point -->
+    <div id="root"></div>
 
-            <div class="card">
-                <h3>Visual Analytics</h3>
-                <canvas id="financeChart"></canvas>
-            </div>
-        </div>
-    </section>
+    <!-- Link to External JS (Must use type="text/babel") -->
+    <script type="text/babel" src="script.js"></script>
 
-    <section id="notification-page" class="page" style="display:none;">
-        <div class="container">
-            <div class="card">
-                <h3>Export & Notify</h3>
-                <p>Send your monthly financial report to stakeholders or save for tax purposes.</p>
-                
-                <textarea id="report-msg" rows="4">My Net Profit for this month is RM 0.00.</textarea>
-                
-                <div class="button-group">
-                    <button class="btn-whatsapp" onclick="NotificationService.sendWhatsApp()">
-                        Send via WhatsApp
-                    </button>
-                    <button class="btn-email" onclick="NotificationService.sendEmail()">
-                        Send via Email
-                    </button>
-                </div>
-            </div>
-        </div>
-    </section>
-
-</div>
-
-<footer>
-  <p>SDG 8: Decent Work & Economic Growth | SDG 9: Innovation</p>
-</footer>
-
-<script src="script.js"></script>
 </body>
 </html>
